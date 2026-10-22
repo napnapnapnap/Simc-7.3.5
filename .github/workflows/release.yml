@@ -1,0 +1,25 @@
+# On each version tag (v1.0, v1.1...): a zip with the Simulationcraft folder at its root, attached to a GitHub release.
+# Players extract it straight into World of Warcraft/Interface/AddOns. The site links to
+# https://github.com/napnapnapnap/Simc-7.3.5/releases/latest/download/Simulationcraft.zip (always the newest release).
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip the addon folder
+        run: zip -r Simulationcraft.zip Simulationcraft
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" Simulationcraft.zip --title "$GITHUB_REF_NAME" \
+            --notes "Extract Simulationcraft.zip into your game folder's Interface/AddOns (Tauri, WoW 7.3.5)."
